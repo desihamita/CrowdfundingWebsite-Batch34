@@ -1,6 +1,11 @@
 <template>
     <v-app>
+        <!-- alert -->
         <alert></alert>
+        <v-dialog v-model="dialog" fullscreen hide-overlay transition="scale-transition">
+            <search @closed="closeDialog"></search>
+        </v-dialog>
+
         <!-- Sidebar-->
         <v-navigation-drawer app v-model="drawer">
             <v-list>
@@ -65,8 +70,7 @@
                 <v-icon v-else> mdi-cash-multiple </v-icon>
             </v-btn>
 
-            <v-text-field slot="extension" hide-details append-icon="mdi-microphone" flat label="search"
-                prepend-inner-icon="mdi-magnify" solo-inverted></v-text-field>
+            <v-text-field slot="extension" hide-details append-icon="mdi-microphone" flat label="Search" prepend-inner-icon="mdi-magnify" solo-inverted @click="dialog=true"></v-text-field>
         </v-app-bar>
 
         <v-app-bar app color="success" dark v-else>
@@ -112,19 +116,21 @@
 import { mapGetters } from 'vuex';
 import Alert from './components/Alert.vue'
 export default {
-    name: 'App',
+    name : 'App',
     components : {
-        Alert : () => import('./components/Alert')
+        Alert : () => import('./components/Alert.vue'),
+        Search : () => import('./components/Search.vue')
     },
-    data: () => ({
-        drawer: false,
-        menus: [
+    data : () => ({
+        drawer : false,
+        menus : [
             { title: 'Home', icon: 'mdi-home', route: '/' },
             { title: 'Campaigns', icon: 'mdi-hand-heart', route: '/campaigns' }
         ],
-        guest: false,
+        guest : false,
+        dialog : false,
     }),
-    computed: {
+    computed : {
         isHome() {
             return (this.$route.path === '/' || this.$route.path === '/home');
         },
@@ -132,5 +138,10 @@ export default {
             transactions: 'transaction/transactions'
         })
     },
+    methods : {
+        closeDialog (value) {
+            this.dialog = value
+        }
+    }
 }
 </script>

@@ -2,24 +2,27 @@
     <v-app>
         <!-- alert -->
         <alert></alert>
-        <v-dialog v-model="dialog" fullscreen hide-overlay transition="scale-transition">
-            <search @closed="closeDialog"></search>
-        </v-dialog>
+
+        <keep-alive>
+            <v-dialog v-model="dialog" fullscreen hide-overlay persistent transition="dialog-bottom-transition">
+                <component :is="currentComponent" @closed="setDialogStatus"></component>
+            </v-dialog>
+        </keep-alive>
 
         <!-- Sidebar-->
         <v-navigation-drawer app v-model="drawer">
             <v-list>
                 <v-list-item v-if="!guest">
                     <v-list-item-avatar>
-                        <v-img src="https://randomuser.me/api/portraits/men/78.jpg"></v-img>
+                        <v-img :src="user.user.photo_profile"></v-img>
                     </v-list-item-avatar>
                     <v-list-item-content>
-                        <v-list-item-title> John Leider </v-list-item-title>
+                        <v-list-item-title> {{ user.user.name }} </v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
 
                 <div class="pa-2" v-if="guest">
-                    <v-btn block color="primary" class="mb-1">
+                    <v-btn block color="primary" class="mb-1" @click="setDialogComponent('login')">
                         <v-icon left> mdi-lock </v-icon>
                         Login
                     </v-btn>
@@ -70,7 +73,16 @@
                 <v-icon v-else> mdi-cash-multiple </v-icon>
             </v-btn>
 
-            <v-text-field slot="extension" hide-details append-icon="mdi-microphone" flat label="Search" prepend-inner-icon="mdi-magnify" solo-inverted @click="dialog=true"></v-text-field>
+            <v-text-field 
+                slot="extension" 
+                hide-details 
+                append-icon="mdi-microphone" 
+                flat 
+                label="Search" 
+                prepend-inner-icon="mdi-magnify" 
+                solo-inverted 
+                @click="setDialogComponent('search')">
+            </v-text-field>
         </v-app-bar>
 
         <v-app-bar app color="success" dark v-else>
@@ -113,13 +125,14 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import Alert from './components/Alert.vue'
+import { mapGetters, mapActions } from 'vuex'
+
 export default {
     name : 'App',
     components : {
-        Alert : () => import('./components/Alert.vue'),
-        Search : () => import('./components/Search.vue')
+        Alert   : () => import('./components/Alert.vue'),
+        Search  : () => import('./components/Search.vue'),
+        Login   : () => import('./components/Login.vue')
     },
     data : () => ({
         drawer : false,
@@ -127,21 +140,32 @@ export default {
             { title: 'Home', icon: 'mdi-home', route: '/' },
             { title: 'Campaigns', icon: 'mdi-hand-heart', route: '/campaigns' }
         ],
-        guest : false,
-        dialog : false,
     }),
     computed : {
         isHome() {
             return (this.$route.path === '/' || this.$route.path === '/home');
         },
         ...mapGetters({
-            transactions: 'transaction/transactions'
-        })
+            transactions     : 'transaction/transactions',
+            guest            : 'auth/guest',
+            user             : 'auth/user',
+            dialogStatus     : 'dialog/status',
+            currentComponent : 'dialog/component'
+        }),
+        dialog: {
+            get(){
+                return this.dialogStatus
+            },
+            set(value){
+                this.setDialogStatus(value)
+            }
+        }
     },
     methods : {
-        closeDialog (value) {
-            this.dialog = value
-        }
-    }
+        ...mapActions({
+            setDialogStatus    : 'dialog/setStatus',
+            setDialogComponent : 'dialog/setComponent',
+        }),
+    },
 }
 </script>

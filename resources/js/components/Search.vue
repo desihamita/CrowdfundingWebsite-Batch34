@@ -11,7 +11,8 @@
             <v-subheader v-if="keyword.length > 0">
                 Result search "{{ keyword }}"
             </v-subheader>
-            <v-alert :value="campaigns.length == 0 && keyword.length > 0" color="warning" outlined> Sorry, but no results
+            <v-alert :value="campaigns.length == 0 && keyword.length > 0" color="warning" outlined> Sorry, but no
+                results
                 were found.
             </v-alert>
 
@@ -43,16 +44,15 @@ export default {
         doSearch() {
             let keyword = this.keyword
             if (keyword.length > 0) {
-                let url = '/api/campaign/search/'+keyword;
+                let url = '/api/campaign/search/' + keyword;
                 axios.get(url)
-                .then((response) => {
-                    let { data } = response.data
-                    this.campaigns = data.campaigns
-                    console.log(this.campaigns)
-                })
-                .catch((error) => {
-                    console.log(error)
-                })
+                    .then((response) => {
+                        let { data } = response.data
+                        this.campaigns = data.campaigns
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
             } else {
                 this.campaigns = []
             }

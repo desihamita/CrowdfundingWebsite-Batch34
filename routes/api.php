@@ -12,6 +12,8 @@ Route::group([
     Route::post('verification', 'VerificationController');
     Route::post('update-password', 'UpdatePasswordController');
     Route::post('login', 'LoginController');
+    Route::post('logout', 'LogoutController')->middleware('auth:api'); 
+    Route::post('check-token', 'CheckTokenController')->middleware('auth:api');   
 });
 
 Route::group([

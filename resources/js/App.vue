@@ -47,7 +47,7 @@
 
             <template v-slot:append v-if="!guest">
                 <div>
-                    <v-btn block color="red" dark>
+                    <v-btn block color="red" dark @click="logout">
                         <v-icon left> mdi-lock </v-icon>
                         Logout
                     </v-btn>
@@ -126,7 +126,6 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-
 export default {
     name : 'App',
     components : {
@@ -150,7 +149,7 @@ export default {
             guest            : 'auth/guest',
             user             : 'auth/user',
             dialogStatus     : 'dialog/status',
-            currentComponent : 'dialog/component'
+            currentComponent : 'dialog/component',
         }),
         dialog: {
             get(){
@@ -165,7 +164,39 @@ export default {
         ...mapActions({
             setDialogStatus    : 'dialog/setStatus',
             setDialogComponent : 'dialog/setComponent',
+            setAuth            : 'auth/set',
+            setAlert           : 'alert/set',
+            checkToken         : 'auth/checkToken'
         }),
+        logout(){
+            let config = {
+                headers: {
+                    'Authorization': 'Bearer'+this.user.token,
+                },
+            }
+            axios.post('/api/auth/logout', {}, config)
+            .then((response) => {
+                this.setAuth({})
+                this.setAlert({
+                    status     : true,
+                    color      : 'success',
+                    text       : 'Logout successfully',
+                })
+            })
+            .catch((error) => {
+                let {data} = error.response
+                this.setAlert({
+                    status  : true,
+                    color   : 'error',
+                    text    : data.message,
+                })
+            })
+        }
     },
+    mounted(){
+        if(this.user){
+            this.checkToken(this.user)
+        }
+    }
 }
 </script>

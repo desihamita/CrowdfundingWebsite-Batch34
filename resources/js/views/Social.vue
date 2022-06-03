@@ -1,6 +1,6 @@
 <template>
     <div>
-        Halaman Social.vue
+        <h1>Halaman Social.vue</h1>
     </div>
 </template>
 <script>
@@ -20,7 +20,7 @@ export default {
     methods: {
         ...mapActions({
             setAlert: 'alert/set',
-            setAuth: 'alert/set',
+            setAuth: 'auth/set',
             setDialogStaus: 'dialog/setStatus'
         }),
         go(provider, code) {
@@ -36,20 +36,21 @@ export default {
                             color: 'success'
                         })
                         this.setDialogStaus(false)
-                        this.$router.push({name : 'home'})
+                        this.$router.push({ name: 'home' })
                     }
                     else {
                         this.setAlert({
                             status: true,
-                            text: 'Login failed!',
+                            text: 'Login Failed!',
                             color: 'error'
                         })
                     }
                 })
                 .catch((error) => {
+                    console.log(error)
                     this.setAlert({
                         status: true,
-                        text: 'Login Failed!',
+                        text: 'gagal',
                         color: 'error'
                     })
                 })
@@ -59,7 +60,7 @@ export default {
         this.code = this.$route.query.code
         this.provider = this.$route.path.split('/')[3]
 
-        this.go(this.provider, this.code )
+        this.go(this.provider, this.code)
     }
 }
 </script>

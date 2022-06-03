@@ -21,13 +21,13 @@ class SocialiteController extends Controller
     
     public function handleProviderCallback($provider)
     {
-        try {
+        try{
             $social_user = Socialite::driver($provider)->stateless()->user();
             if(!$social_user){
                 return response()->json([
                     'response_code' => '01',
-                    'response_message' => 'Login Failed'
-                ],401);
+                    'response_message' => 'gagal'
+                ],402);
             }
             $user = User::whereEmail($social_user->email)->first();
             if(!$user){
@@ -42,17 +42,20 @@ class SocialiteController extends Controller
                 ]);
             }
             $data['user'] = $user;
+            
             $data['token'] = auth()->login($user);
             return response()->json([
                 'response_code' => '00',
                 'response_message' => 'Login Successfuly',
                 'data' => $data,
-            ],401);  
-        } catch (\Throwable $th) {
-            return response()->json([
-                'response_code' => '00',
-                'response_message' => 'Login gagal'
-            ],401);
+            ],200);  
         }
+        catch(\Throwable $th){
+            return response()->json([
+                'response_code' => '01',
+                'response_message' => 'gagal login'
+            ],401); 
+        }
+
     }
 }
